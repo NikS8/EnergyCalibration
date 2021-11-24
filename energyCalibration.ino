@@ -136,6 +136,8 @@ void loop() {
     delay(10222);
     Serial.println("  Старт автокалибровки");
 
+    current = pzem.current();
+
 float current_1 = median3Filter.filtered(emon1.calcIrms(1480));
 float current_2 = median3Filter.filtered(emon2.calcIrms(1480));
 float current_3 = median3Filter.filtered(emon3.calcIrms(1480));
@@ -174,7 +176,10 @@ Serial.println("");
 Serial.println(" Результаты калиброки надо скопировать и заменить");
 Serial.println(" в файле boiler_down_init.h в Блоке Energy Monitor");
 Serial.println("");
+
 Serial.println("   П а у з а      на   2 минуты");
+Serial.print("PZEM current: ");      Serial.print(current);      Serial.println("A");
+
 delay(15111);
 Serial.println("     Пауза закончилась");
 
