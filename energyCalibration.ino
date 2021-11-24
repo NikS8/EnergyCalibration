@@ -39,6 +39,14 @@ EnergyMonitor emon5;
 EnergyMonitor emon6;
 EnergyMonitor emon7;
 
+/*
+	Пример использования быстрого медианного фильтра 3 порядка
+*/
+
+#include "GyverFilters.h"
+GMedian3<float> median3Filter; 		// указываем тип данных в <>
+
+
 //  Блок SETUP  ------------------------------------------------------
 
 void setup() {
@@ -83,8 +91,7 @@ void setup() {
 //  Блок LOOP  ------------------------------------------------------
 
 void loop() {
-    Serial.println("  PZEM_RX_PIN 12 ");
-    Serial.println("  PZEM_TX_PIN 13");
+    Serial.println("  PZEM pins Serial3 ");
     Serial.println("Трансформаторы тока pins A1,A2,A3,A4,A5,A6,A0");
     Serial.println("");
 
@@ -129,13 +136,13 @@ void loop() {
     delay(10222);
     Serial.println("  Старт автокалибровки");
 
-float current_1 = emon1.calcIrms(1480);
-float current_2 = emon2.calcIrms(1480);
-float current_3 = emon3.calcIrms(1480);
-float current_4 = emon4.calcIrms(1480);
-float current_5 = emon5.calcIrms(1480);
-float current_6 = emon6.calcIrms(1480);
-float current_7 = emon7.calcIrms(1480);
+float current_1 = median3Filter.filtered(emon1.calcIrms(1480));
+float current_2 = median3Filter.filtered(emon2.calcIrms(1480));
+float current_3 = median3Filter.filtered(emon3.calcIrms(1480));
+float current_4 = median3Filter.filtered(emon4.calcIrms(1480));
+float current_5 = median3Filter.filtered(emon5.calcIrms(1480));
+float current_6 = median3Filter.filtered(emon6.calcIrms(1480));
+float current_7 = median3Filter.filtered(emon7.calcIrms(1480));
 
 current_koef1 = current / current_1;
 current_koef2 = current / current_2;
