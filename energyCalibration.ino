@@ -132,7 +132,7 @@ void loop() {
 
     Serial.println();
 
-    Serial.println("  Калиброка через 22 сек  (метки времени убрать)");
+    Serial.println("  Калиброка через 10 сек  (метки времени убрать)");
     delay(10222);
     Serial.println("  Старт автокалибровки");
 
@@ -177,7 +177,7 @@ Serial.println(" Результаты калиброки надо скопиро
 Serial.println(" в файле boiler_down_init.h в Блоке Energy Monitor");
 Serial.println("");
 
-Serial.println("   П а у з а      на   2 минуты");
+Serial.println("   П а у з а      на   15 сек");
 Serial.print("PZEM current: ");      Serial.print(current);      Serial.println("A");
 
 delay(15111);
