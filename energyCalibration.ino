@@ -21,15 +21,13 @@ PZEM004Tv30 pzem(Serial3, 0x02);
 #define PIN_EMON4 A4
 #define PIN_EMON5 A5
 #define PIN_EMON6 A6
-#define PIN_EMON7 A0
 
-float current_koef1 = 1;
-float current_koef2 = 1;
-float current_koef3 = 1;
-float current_koef4 = 1;
-float current_koef5 = 1;
-float current_koef6 = 1;
-float current_koef7 = 1;    // Калибровка при float current_koef7 = 1;
+float current_koef1 = 19.6;
+float current_koef2 = 19.6;
+float current_koef3 = 19.6;
+float current_koef4 = 19.6;
+float current_koef5 = 19.6;
+float current_koef6 = 19.6;
 
 EnergyMonitor emon1;
 EnergyMonitor emon2;
@@ -37,15 +35,6 @@ EnergyMonitor emon3;
 EnergyMonitor emon4;
 EnergyMonitor emon5;
 EnergyMonitor emon6;
-EnergyMonitor emon7;
-
-/*
-	Пример использования быстрого медианного фильтра 3 порядка
-*/
-
-#include "GyverFilters.h"
-GMedian3<float> median3Filter; 		// указываем тип данных в <>
-
 
 //  Блок SETUP  ------------------------------------------------------
 
@@ -59,15 +48,13 @@ void setup() {
   pinMode( PIN_EMON4, INPUT );
   pinMode( PIN_EMON5, INPUT );
   pinMode( PIN_EMON6, INPUT );
-  pinMode( PIN_EMON7, INPUT );
 
-  emon1.current(1, current_koef1);
-  emon2.current(2, current_koef2);
-  emon3.current(3, current_koef3);
-  emon4.current(4, current_koef4);
-  emon5.current(5, current_koef5);
-  emon6.current(6, current_koef6);
-  emon7.current(7, current_koef7);
+  emon1.current(PIN_EMON1, current_koef1);
+  emon2.current(PIN_EMON2, current_koef2);
+  emon3.current(PIN_EMON3, current_koef3);
+  emon4.current(PIN_EMON4, current_koef4);
+  emon5.current(PIN_EMON5, current_koef5);
+  emon6.current(PIN_EMON6, current_koef6);
 
 
   pinMode(24, OUTPUT);
@@ -80,13 +67,19 @@ void setup() {
   pinMode(31, OUTPUT);
 
   digitalWrite(24, HIGH);
-  digitalWrite(25, HIGH);
   digitalWrite(26, HIGH);
-  digitalWrite(27, HIGH);
-  digitalWrite(28, HIGH);
-  digitalWrite(29, HIGH);
-  digitalWrite(30, HIGH);
+
+  //digitalWrite(28, HIGH);
+  //digitalWrite(30, HIGH);
+  //digitalWrite(25, HIGH);
+  //digitalWrite(27, HIGH);
+  //digitalWrite(29, HIGH);
   digitalWrite(31, HIGH);
+
+
+  delay(1000);
+  emon1.calcIrms(14800);
+  delay(500);
 }
 //  Блок LOOP  ------------------------------------------------------
 
@@ -98,6 +91,14 @@ void loop() {
     Serial.print("Custom Address:");
     Serial.println(pzem.getAddress(), HEX);
 
+
+
+float current_1 = emon1.calcIrms(1480);
+float current_2 = emon2.calcIrms(1480);
+float current_3 = emon3.calcIrms(1480);
+float current_4 = emon4.calcIrms(1480);
+float current_5 = emon5.calcIrms(1480);
+float current_6 = emon6.calcIrms(1480);
     // Read the data from the sensor
     float voltage = pzem.voltage();
     float current = pzem.current();
@@ -131,20 +132,8 @@ void loop() {
     }
 
     Serial.println();
-
-    Serial.println("  Калиброка через 10 сек  (метки времени убрать)");
-    delay(10222);
     Serial.println("  Старт автокалибровки");
 
-    current = pzem.current();
-
-float current_1 = median3Filter.filtered(emon1.calcIrms(1480));
-float current_2 = median3Filter.filtered(emon2.calcIrms(1480));
-float current_3 = median3Filter.filtered(emon3.calcIrms(1480));
-float current_4 = median3Filter.filtered(emon4.calcIrms(1480));
-float current_5 = median3Filter.filtered(emon5.calcIrms(1480));
-float current_6 = median3Filter.filtered(emon6.calcIrms(1480));
-float current_7 = median3Filter.filtered(emon7.calcIrms(1480));
 
 current_koef1 = current / current_1;
 current_koef2 = current / current_2;
@@ -152,7 +141,6 @@ current_koef3 = current / current_3;
 current_koef4 = current / current_4;
 current_koef5 = current / current_5;
 current_koef6 = current / current_6;
-current_koef7 = current / current_7;
 
 Serial.println("   Результаты калиброки: ");
 Serial.println("");
@@ -169,19 +157,14 @@ Serial.print("float current_koef5 = "); Serial.print(current_koef5);
 Serial.println(";");
 Serial.print("float current_koef6 = "); Serial.print(current_koef6);
 Serial.println(";");
-Serial.print("float current_koef7 = "); Serial.print(current_koef7);
-Serial.println(";");
 
 Serial.println("");
-Serial.println(" Результаты калиброки надо скопировать и заменить");
+Serial.print(" Результаты калиброки надо скопировать и заменить");
 Serial.println(" в файле boiler_down_init.h в Блоке Energy Monitor");
 Serial.println("");
+Serial.println("   П а у з а      на   5 sec");
+delay(5000);
 
-Serial.println("   П а у з а      на   15 сек");
-Serial.print("PZEM current: ");      Serial.print(current);      Serial.println("A");
-
-delay(15111);
-Serial.println("     Пауза закончилась");
 
 }
 //  END  ------------------------------------------------------
