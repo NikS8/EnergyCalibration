@@ -21,8 +21,8 @@ serial interface will be used for communication with the module.
  * Pin 13 Tx (Connects to the Rx pin on the PZEM)
 */
 #if !defined(PZEM_RX_PIN) && !defined(PZEM_TX_PIN)
-#define PZEM_RX_PIN 12
-#define PZEM_TX_PIN 13
+#define PZEM_RX_PIN 37
+#define PZEM_TX_PIN 39
 #endif
 
 
